@@ -19,10 +19,6 @@ public class NotepadApp extends JFrame {
     private static final String MENU_SAVE_FILE = "Save";
 
     private JTextArea txtWorkspace;
-    private JButton btnNewFile;
-    private JButton btnOpenFile;
-    private JButton btnSaveFile;
-    private JButton btnSaveAsFile;
 
     private File mCurrentlyOpenedFile;
 
@@ -34,28 +30,47 @@ public class NotepadApp extends JFrame {
     }
 
     private void initializeComponents() {
-        /**
-         * TextEditor Panel
-         */
-        txtWorkspace = new JTextArea();
+        txtWorkspace = createWorkspace();
+        JScrollPane scrollableWorkspace = scrollbarAsNeeded(txtWorkspace);
+        JPanel toolbar = createToolbar();
+
+        // Add toolbar and textarea to main window
+        Container contentPane = getContentPane();
+        contentPane.add(toolbar, BorderLayout.NORTH);
+        contentPane.add(scrollableWorkspace, BorderLayout.CENTER);
+    }
+
+    private JTextArea createWorkspace() {
+        JTextArea txtWorkspace = new JTextArea();
         txtWorkspace.setWrapStyleWord(false);
         txtWorkspace.setMargin(new Insets(10, 10, 10, 10));
+        return txtWorkspace;
+    }
 
-        JScrollPane scrollPane = new JScrollPane(txtWorkspace);
+    private JScrollPane scrollbarAsNeeded(JComponent component) {
+        JScrollPane scrollPane = new JScrollPane(component);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        return scrollPane;
+    }
 
-        /**
-         * Toolbar Panel
-         */
+    private JPanel createToolbar() {
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        addToolbarItems(toolbar);
 
-        btnNewFile = new JButton(MENU_NEW_FILE);
-        btnOpenFile = new JButton(MENU_OPEN_FILE);
-        btnSaveFile = new JButton(MENU_SAVE_FILE);
-        btnSaveAsFile = new JButton(MENU_SAVE_AS);
+        return toolbar;
+    }
 
-        addToolbarItemListeners();
+    private void addToolbarItems(JPanel toolbar) {
+        JButton btnNewFile = new JButton(MENU_NEW_FILE);
+        JButton btnOpenFile = new JButton(MENU_OPEN_FILE);
+        JButton btnSaveFile = new JButton(MENU_SAVE_FILE);
+        JButton btnSaveAsFile = new JButton(MENU_SAVE_AS);
+
+        btnNewFile.addActionListener(createNewFileListener());
+        btnOpenFile.addActionListener(createOpenFileListener());
+        btnSaveFile.addActionListener(createSaveFileListener());
+        btnSaveAsFile.addActionListener(createSaveAsFileListener());
 
         toolbar.add(btnNewFile);
         toolbar.add(btnOpenFile);
@@ -63,20 +78,6 @@ public class NotepadApp extends JFrame {
         toolbar.add(btnSaveAsFile);
 
         stylizeToolbarComponents(toolbar, btnNewFile, btnOpenFile, btnSaveFile, btnSaveAsFile);
-
-        /**
-         * Add toolbar and textarea to main window
-         */
-        Container contentPane = getContentPane();
-        contentPane.add(toolbar, BorderLayout.NORTH);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-    }
-
-    private void addToolbarItemListeners() {
-        btnNewFile.addActionListener(createNewFileListener());
-        btnOpenFile.addActionListener(createOpenFileListener());
-        btnSaveFile.addActionListener(createSaveFileListener());
-        btnSaveAsFile.addActionListener(createSaveAsFileListener());
     }
 
     private ActionListener createSaveAsFileListener() {
