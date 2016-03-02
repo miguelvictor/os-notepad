@@ -2,8 +2,8 @@ package team.migz.and.virgil.notepad;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class NotepadApp extends JFrame {
@@ -18,6 +18,12 @@ public class NotepadApp extends JFrame {
     private static final String MENU_OPEN_FILE = "Open";
     private static final String MENU_SAVE_FILE = "Save";
 
+    private JTextArea txtWorkspace;
+    private JButton btnNewFile;
+    private JButton btnOpenFile;
+    private JButton btnSaveFile;
+    private JButton btnSaveAsFile;
+
     private File mCurrentlyOpenedFile;
 
     public NotepadApp() {
@@ -31,7 +37,7 @@ public class NotepadApp extends JFrame {
         /**
          * TextEditor Panel
          */
-        JTextArea txtWorkspace = new JTextArea();
+        txtWorkspace = new JTextArea();
         txtWorkspace.setWrapStyleWord(false);
         txtWorkspace.setMargin(new Insets(10, 10, 10, 10));
 
@@ -44,15 +50,65 @@ public class NotepadApp extends JFrame {
          */
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        JButton btnNewFile = new JButton(MENU_NEW_FILE);
-        JButton btnOpenFile = new JButton(MENU_OPEN_FILE);
-        JButton btnSaveFile = new JButton(MENU_SAVE_FILE);
-        JButton btnSaveAsFile = new JButton(MENU_SAVE_AS);
+        btnNewFile = new JButton(MENU_NEW_FILE);
+        btnOpenFile = new JButton(MENU_OPEN_FILE);
+        btnSaveFile = new JButton(MENU_SAVE_FILE);
+        btnSaveAsFile = new JButton(MENU_SAVE_AS);
+
+        addToolbarItemListeners();
+
+        toolbar.add(btnNewFile);
+        toolbar.add(btnOpenFile);
+        toolbar.add(btnSaveFile);
+        toolbar.add(btnSaveAsFile);
+
+        stylizeToolbarComponents(toolbar, btnNewFile, btnOpenFile, btnSaveFile, btnSaveAsFile);
 
         /**
-         * New File Logic
+         * Add toolbar and textarea to main window
          */
-        btnNewFile.addActionListener(e -> {
+        Container contentPane = getContentPane();
+        contentPane.add(toolbar, BorderLayout.NORTH);
+        contentPane.add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void addToolbarItemListeners() {
+        btnNewFile.addActionListener(createNewFileListener());
+        btnOpenFile.addActionListener(createOpenFileListener());
+        btnSaveFile.addActionListener(createSaveFileListener());
+        btnSaveAsFile.addActionListener(createSaveAsFileListener());
+    }
+
+    private ActionListener createSaveAsFileListener() {
+        return e -> {
+            System.out.println("Click Trigger: Save As");
+        };
+    }
+
+    private ActionListener createSaveFileListener() {
+        return e -> {
+            System.out.println("Click Trigger: Save");
+
+            String desiredFileName = JOptionPane.showInputDialog(this, "Enter filename: ", "Input", JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("Desired Filename: " + desiredFileName);
+
+            // TODO save the file
+            if (mCurrentlyOpenedFile == null) {
+
+            } else {
+
+            }
+        };
+    }
+
+    private ActionListener createOpenFileListener() {
+        return e -> {
+            System.out.println("Click Trigger: Open File");
+        };
+    }
+
+    private ActionListener createNewFileListener() {
+        return e -> {
             System.out.println("Click Trigger: New File");
 
             if (mCurrentlyOpenedFile == null) {
@@ -81,52 +137,7 @@ public class NotepadApp extends JFrame {
                     JOptionPane.showMessageDialog(this, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-        });
-
-        /**
-         * Open File Logic
-         */
-        btnOpenFile.addActionListener(e -> {
-            System.out.println("Click Trigger: Open File");
-        });
-
-        /**
-         * Save File logic
-         */
-        btnSaveFile.addActionListener(e -> {
-            System.out.println("Click Trigger: Save");
-
-            String desiredFileName = JOptionPane.showInputDialog(this, "Enter filename: ", "Input", JOptionPane.INFORMATION_MESSAGE);
-            System.out.println("Desired Filename: " + desiredFileName);
-
-            // TODO save the file
-            if (mCurrentlyOpenedFile == null) {
-
-            } else {
-
-            }
-        });
-
-        /**
-         * Save As logic
-         */
-        btnSaveAsFile.addActionListener(e -> {
-            System.out.println("Click Trigger: Save As");
-        });
-
-        toolbar.add(btnNewFile);
-        toolbar.add(btnOpenFile);
-        toolbar.add(btnSaveFile);
-        toolbar.add(btnSaveAsFile);
-
-        stylizeToolbarComponents(toolbar, btnNewFile, btnOpenFile, btnSaveFile, btnSaveAsFile);
-
-        /**
-         * Add toolbar and textarea to main window
-         */
-        Container contentPane = getContentPane();
-        contentPane.add(toolbar, BorderLayout.NORTH);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
+        };
     }
 
     private void stylizeToolbarComponents(JComponent... components) {
