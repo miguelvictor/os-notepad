@@ -67,10 +67,10 @@ public class NotepadApp extends JFrame {
         JButton btnSaveFile = new JButton(MENU_SAVE_FILE);
         JButton btnSaveAsFile = new JButton(MENU_SAVE_AS);
 
-        btnNewFile.addActionListener(createNewFileListener());
-        btnOpenFile.addActionListener(createOpenFileListener());
-        btnSaveFile.addActionListener(createSaveFileListener());
-        btnSaveAsFile.addActionListener(createSaveAsFileListener());
+        btnNewFile.addActionListener(e -> newFile());
+        btnOpenFile.addActionListener(e -> openFile());
+        btnSaveFile.addActionListener(e -> saveFile());
+        btnSaveAsFile.addActionListener(e -> saveAsFile());
 
         toolbar.add(btnNewFile);
         toolbar.add(btnOpenFile);
@@ -80,65 +80,57 @@ public class NotepadApp extends JFrame {
         stylizeToolbarComponents(toolbar, btnNewFile, btnOpenFile, btnSaveFile, btnSaveAsFile);
     }
 
-    private ActionListener createSaveAsFileListener() {
-        return e -> {
-            System.out.println("Click Trigger: Save As");
-        };
-    }
+    private void newFile() {
+        System.out.println("Click Trigger: New File");
 
-    private ActionListener createSaveFileListener() {
-        return e -> {
-            System.out.println("Click Trigger: Save");
+        if (mCurrentlyOpenedFile == null) {
+            if (!txtWorkspace.getText().isEmpty()) {
+                int choice = JOptionPane.showConfirmDialog(this, "You have unsaved changes, are you sure you want to create a new file?", "Prompt", JOptionPane.YES_NO_OPTION);
 
-            String desiredFileName = JOptionPane.showInputDialog(this, "Enter filename: ", "Input", JOptionPane.INFORMATION_MESSAGE);
-            System.out.println("Desired Filename: " + desiredFileName);
-
-            // TODO save the file
-            if (mCurrentlyOpenedFile == null) {
-
-            } else {
-
+                if (choice == JOptionPane.YES_OPTION) {
+                    txtWorkspace.setText("");
+                }
             }
-        };
-    }
-
-    private ActionListener createOpenFileListener() {
-        return e -> {
-            System.out.println("Click Trigger: Open File");
-        };
-    }
-
-    private ActionListener createNewFileListener() {
-        return e -> {
-            System.out.println("Click Trigger: New File");
-
-            if (mCurrentlyOpenedFile == null) {
-                if (!txtWorkspace.getText().isEmpty()) {
-                    int choice = JOptionPane.showConfirmDialog(this, "You have unsaved changes, are you sure you want to create a new file?", "Prompt", JOptionPane.YES_NO_OPTION);
+        } else {
+            try {
+                if (Utils.readAsString(mCurrentlyOpenedFile).equals(txtWorkspace.getText())) {
+                    mCurrentlyOpenedFile = null;
+                    txtWorkspace.setText("");
+                } else {
+                    int choice = JOptionPane.showConfirmDialog(this, "You have unsaved changes, are you sure you want to close this file and create a new file?", "Prompt", JOptionPane.YES_NO_OPTION);
 
                     if (choice == JOptionPane.YES_OPTION) {
-                        txtWorkspace.setText("");
-                    }
-                }
-            } else {
-                try {
-                    if (Utils.readAsString(mCurrentlyOpenedFile).equals(txtWorkspace.getText())) {
                         mCurrentlyOpenedFile = null;
                         txtWorkspace.setText("");
-                    } else {
-                        int choice = JOptionPane.showConfirmDialog(this, "You have unsaved changes, are you sure you want to close this file and create a new file?", "Prompt", JOptionPane.YES_NO_OPTION);
-
-                        if (choice == JOptionPane.YES_OPTION) {
-                            mCurrentlyOpenedFile = null;
-                            txtWorkspace.setText("");
-                        }
                     }
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                    JOptionPane.showMessageDialog(this, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+                JOptionPane.showMessageDialog(this, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        };
+        }
+    }
+
+    private void openFile() {
+        System.out.println("Click Trigger: Open File");
+    }
+
+    private void saveFile() {
+        System.out.println("Click Trigger: Save");
+
+        String desiredFileName = JOptionPane.showInputDialog(this, "Enter filename: ", "Input", JOptionPane.INFORMATION_MESSAGE);
+        System.out.println("Desired Filename: " + desiredFileName);
+
+        // TODO save the file
+        if (mCurrentlyOpenedFile == null) {
+
+        } else {
+
+        }
+    }
+
+    private void saveAsFile() {
+        System.out.println("Click Trigger: Save As");
     }
 
     private void stylizeToolbarComponents(JComponent... components) {
